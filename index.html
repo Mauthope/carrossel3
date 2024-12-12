@@ -264,6 +264,10 @@ h2 {
             <label for="opLength">Comprimento da OP (cm):</label>
             <input type="number" id="opLength" min="0" required>
         </div>
+         <div class="input-group">
+            <label for="opLargura">Largura da OP (cm):</label>
+            <input type="number" id="opLargura" min="0" required>
+        </div>
         <div class="input-group">
             <label for="fabricType">Tipo de Tecido:</label>
             <select id="fabricType" required>
@@ -328,6 +332,7 @@ h2 {
                 <th>Código do Componente</th>
                 <th>Quantidade da OP</th>
                 <th>Comprimento da OP</th>
+                <th>Largura da OP</th>
                 <th>Tipo de Tecido</th>
                 <th>Gramatura da OP</th>
             <th>Número de Cortes</th> <!-- Título novo -->
@@ -446,6 +451,7 @@ function resetInputFields() {
     document.getElementById('componentCode').value = '';
     document.getElementById('opQuantity').value = '';
     document.getElementById('opLength').value = '';
+    document.getElementById('opLargura').value = '';
     document.getElementById('fabricType').value = '';
     document.getElementById('opWeight').value = '';
 
@@ -454,6 +460,7 @@ function resetInputFields() {
     document.getElementById('componentCode').disabled = true;
     document.getElementById('opQuantity').disabled = true;
     document.getElementById('opLength').disabled = true;
+    document.getElementById('opLargura').disabled = true;
     document.getElementById('fabricType').disabled = true;
     document.getElementById('opWeight').disabled = true;
 
@@ -473,10 +480,11 @@ function calculateAndSave() {
     const componentCode = document.getElementById('componentCode').value;
     const opQuantity = parseFloat(document.getElementById('opQuantity').value);
     const opLength = parseFloat(document.getElementById('opLength').value);
+    const opLargura = parseFloat(document.getElementById('opLargura').value);
     const fabricType = document.getElementById('fabricType').value;
     const opWeight = parseFloat(document.getElementById('opWeight').value);
 
-    if (!opNumber || !componentCode || isNaN(opQuantity) || isNaN(opLength) || !fabricType || isNaN(opWeight)) {
+    if (!opNumber || !componentCode || isNaN(opQuantity) || isNaN(opLength) || isNaN(opLargura) || !fabricType || isNaN(opWeight)) {
         alert('Por favor, preencha todos os campos corretamente.');
         return;
     }
@@ -497,8 +505,8 @@ function calculateAndSave() {
         numTurns += 5; // Aumenta 5 ao valor final
     }
 
-    // Regra para opLength
-    if (opLength < 60) {
+    // Regra para opLargura
+    if (opLargura < 60) {
         numTurns += 5; // Aumenta 5 ao valor final
     }
 
@@ -551,6 +559,7 @@ function calculateAndSave() {
         componentCode,
         opQuantity,
         opLength,
+        opLargura,
         fabricType,
         opWeight,
         numCuts,
@@ -598,6 +607,7 @@ function updateTable() {
             <td>${record.componentCode}</td>
             <td>${record.opQuantity}</td>
             <td>${record.opLength}</td>
+            <td>${record.opLargura}</td>
             <td>${record.fabricType}</td>
             <td>${record.opWeight}</td>
             <td>${record.numCuts}</td>
@@ -629,10 +639,10 @@ function loadTableFromLocalStorage() {
 // Faz o download dos registros em CSV
 function downloadCSV() {
     let csvContent = "data:text/csv;charset=utf-8,";
-    csvContent += "Data,Máquinas Ativas,OP Número,Código do Componente,Quantidade OP,Comprimento OP,Tipo de Tecido,Peso OP,Número de Cortes,Número de Voltas,Quantidade Cortada,Número de Carrosséis,Restante de Voltas,Quantidade Total Cortada,Tamanho do Carrossel\n";
+    csvContent += "Data,Máquinas Ativas,OP Número,Código do Componente,Quantidade OP,Comprimento OP,Largura da OP,Tipo de Tecido,Peso OP,Número de Cortes,Número de Voltas,Quantidade Cortada,Número de Carrosséis,Restante de Voltas,Quantidade Total Cortada,Tamanho do Carrossel\n";
     
     records.forEach((record) => {
-        const row = `"${record.date}","${record.machines}","${record.opNumber}","${record.componentCode}","${record.opQuantity}","${record.opLength}","${record.fabricType}","${record.opWeight}","${record.numCuts}","${record.numTurns}","${record.cutAmount}","${record.numCycles}","${record.remainingTurns}","${record.totalCutAmount}","${record.carouselSize}"`;
+        const row = `"${record.date}","${record.machines}","${record.opNumber}","${record.componentCode}","${record.opQuantity}","${record.opLength}","${record.opLargura}","${record.fabricType}","${record.opWeight}","${record.numCuts}","${record.numTurns}","${record.cutAmount}","${record.numCycles}","${record.remainingTurns}","${record.totalCutAmount}","${record.carouselSize}"`;
         csvContent += row + "\n";
     });
 
