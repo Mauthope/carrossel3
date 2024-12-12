@@ -322,7 +322,8 @@ h2 {
 
   <button onclick="downloadCSV()">Download CSV</button>
     
-<button id="clearStorageButton" onclick="clearLocalStorage()">Limpar Dados</button>
+<button id="clearStorageBtn">Limpar Dados</button>
+
     
 <!-- TABELA -->
     <table id="recordsTable">
@@ -657,15 +658,17 @@ function downloadCSV() {
     link.click();
 }
 
-// Função para limpar o localStorage
+// Função para limpar o localStorage e atualizar a tabela
 function clearLocalStorage() {
-    if (confirm("Tem certeza de que deseja excluir todos os dados salvos?")) {
-        localStorage.removeItem('productionRecords'); // Remove o item específico
-        records = []; // Reseta o array local
-        updateTable(); // Atualiza a tabela para refletir as mudanças
-        alert("Todos os dados foram excluídos.");
-    }
+    localStorage.removeItem('productionRecords');  // Remove os dados do localStorage
+    records = [];  // Limpa a variável records
+    updateTable();  // Atualiza a tabela para refletir a remoção
+    showPopup("Os dados foram excluídos com sucesso!");  // Exibe um alerta informando que os dados foram apagados
 }
+
+// Adiciona o evento de clique no botão para limpar o localStorage
+document.getElementById('clearStorageBtn').addEventListener('click', clearLocalStorage);
+
 
 
 </script>
