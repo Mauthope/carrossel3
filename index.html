@@ -490,7 +490,19 @@ function calculateAndSave() {
     if (fabricType === 'Plano') {
         numTurns = Math.floor(((120 - opWeight) * 0.73) + 40);
     } else if (fabricType === 'Tubular') {
-        numTurns = Math.floor(((82 - opWeight) * 0.3) + 40);
+    numTurns = Math.floor(((82 - opWeight) * 0.3) + 40);
+
+    // Regra para opLength
+    if (opLength === 65) {
+        numTurns += 5; // Aumenta 5 ao valor final
+    }
+
+    // Regra para opWeight
+    if (opWeight < 60) {
+        numTurns += 5; // Aumenta 5 ao valor final
+    }
+}
+
     } else if (fabricType === 'PATCH') {
         numTurns = 25;
     } else if (fabricType === 'Saia') {
