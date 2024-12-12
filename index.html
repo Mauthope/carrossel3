@@ -492,13 +492,13 @@ function calculateAndSave() {
     } else if (fabricType === 'Tubular') {
     numTurns = Math.floor(((82 - opWeight) * 0.3) + 40);
 
-    // Regra para opLength
-    if (opLength === 65) {
+    // Regra para opWeight
+    if (opWeight === 65) {
         numTurns += 5; // Aumenta 5 ao valor final
     }
 
-    // Regra para opWeight
-    if (opWeight < 60) {
+    // Regra para opLength
+    if (opLength < 60) {
         numTurns += 5; // Aumenta 5 ao valor final
     }
 
