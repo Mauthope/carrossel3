@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Produção de OP</title>
+    <style>
+      body {
+    font-family: 'Roboto', sans-serif;
+    margin: 20px;
+    background-color: #f4f6f9;
+    color: #333;
+}
+
+h1 {
+    color: #3f51b5;
+    text-align: center;
+    font-size: 2.5em;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #666;
+}
+
+input[type="number"],
+input[type="text"],
+select {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+input[type="number"]:focus,
+input[type="text"]:focus,
+select:focus {
+    border-color: #3f51b5;
+}
+
+button {
+    padding: 12px 25px;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-right: 8px;
+    margin-top: 12px;
+    transition: background-color 0.3s;
+    font-size: 1em;
+}
+
+.machine-btn {
+    width: 160px;
+    height: 50px;
+    margin-bottom: 10px;
+    font-size: 16px;
+    border-radius: 6px;
+}
+
+.machine-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.active {
+    background-color: #f44336;
+}
+
+.inactive {
+    background-color: #4caf50;
+}
+
+.calc-btn {
+    background-color: #3f51b5;
+}
+
+.calc-btn:hover {
+    background-color: #3949ab;
+}
+
+.result-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    margin-top: 25px;
+}
+
+.result {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 20px;
+    margin: 10px;
+    flex: 1 1 calc(30% - 20px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.result:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+table {
+    margin-top: 25px;
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1em;
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: #3f51b5;
+    color: white;
+    text-transform: uppercase;
+}
+
+h2 {
+    margin-top: 40px;
+    text-align: center;
+    font-size: 2em;
+    font-weight: bold;
+}
+
+#downloadBtn {
+    padding: 12px 25px;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-right: 8px;
+    margin-top: 12px;
+    transition: background-color 0.3s;
+    font-size: 1em;
+}
+
+#downloadBtn:hover {
+    background-color: #0056b3;
+}
+
+.results-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.result-block {
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1.3em;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.color1 {
+    background-color: #3f51b5;
+    color: white;
+}
+
+.color2 {
+    background-color: #3f51b5;
+    color: white;
+}
+
+.color3 {
+     background-color: #3f51b5;
+    color: white;
+}
+
+.color4 {
+     background-color: #3f51b5;
+    color: white;
+}
+
+.color5 {
+     background-color: #3f51b5;
+    color: white;
+}
+
+.color6 {
+     background-color: #3f51b5;
+    color: white;
+}
+
+.results-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.result-block {
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1.3em;
+    font-weight: bold;
+    cursor: pointer; /* Adiciona um cursor de clique */
+    transition: background-color 0.3s;
+}
+
+.result-block:hover {
+    background-color: #f0f0f0; /* Efeito hover */
+}
+
+    </style>
+</head>
+<body>
+    <h1>Controle de Produção</h1>
+
+    <div class="machine-buttons">
+        <button id="machine1" class="machine-btn inactive" onclick="toggleMachine(1)">CL-01</button>
+        <button id="machine2" class="machine-btn inactive" onclick="toggleMachine(2)">CL-02</button>
+        <button id="machine3" class="machine-btn inactive" onclick="toggleMachine(3)">CL-03</button>
+        <button id="machine4" class="machine-btn inactive" onclick="toggleMachine(4)">CL-04</button>
+    </div>
+
+    <form id="productionForm">
+        <div class="input-group">
+            <label for="opNumber">Número da OP:</label>
+            <input type="text" id="opNumber" maxlength="13" oninput="formatOPNumber(this)" required>
+        </div>
+        <div class="input-group">
+            <label for="componentCode">Código do Componente:</label>
+            <select id="componentCode" required>
+                <option value="">Selecione</option>
+                <option value="5 - Topo">5 - Topo</option>
+                <option value="3 - Saia">3 - Saia</option>
+                <option value="6 - Válvula Enchimento">6 - Válvula Enchimento</option>
+                <option value="7 - Válvula Descarga">7 - Válvula Descarga</option>
+                <option value="2 - Flap">2 - Flap</option>
+                <option value="108 - Tecido Rafia">108 - Tecido Rafia</option>
+                <option value="198 - Etiqueta Regata">198 - Etiqueta Regata</option>
+                <option value="102 - Reforço Porta Documento">102 - Reforço Porta Documento</option>
+                <option value="22 - Reforço Alça">22 - Reforço Alça</option>
+                <option value="104 - Válvula Afunilada">104 - Válvula Afunilada</option>
+                <option value="172 - Flap de Topo">172 - Flap de Topo</option>
+                <option value="Liner">Liner</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label for="opQuantity">Quantidade da OP:</label>
+            <input type="number" id="opQuantity" min="0" required>
+        </div>
+        <div class="input-group">
+            <label for="opLength">Comprimento da OP (cm):</label>
+            <input type="number" id="opLength" min="0" required>
+        </div>
+        <div class="input-group">
+            <label for="fabricType">Tipo de Tecido:</label>
+            <select id="fabricType" required>
+                <option value="">Selecione</option>
+                <option value="Plano">Plano</option>
+                <option value="Tubular">Tubular</option>
+                <option value="PATCH">PATCH</option>
+                <option value="Saia">Saia</option>
+                <option value="HB">HB</option>
+                <option value="Liner">Liner</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label for="opWeight">Gramatura da OP:</label>
+            <input type="number" id="opWeight" min="0" required>
+        </div>
+
+        <button type="button" class="calc-btn" onclick="calculateAndSave()">Calcular e Salvar</button>
+    </form>
+
+   <h2>Resultados:</h2>
+
+<div class="results-container">
+        <div class="result-block color2"onclick="showPopup('Tamanho ao qual deve ser ajustado o carrossel para não sobrar muito material após cortado, este ajuste é feito no carrossel trocando os pinos de lugar. Recurso importante para não gerar resíduo.')">
+        <p id="carouselSizeResult">Tamanho do carrossel: </p>
+    </div>
+    <div class="result-block color1"onclick="showPopup('É o número de vezes ao qual você irá cortar o tecido na mesa.')">
+        <p id="cutsResult">Número de Cortes na mesa: </p>
+    </div>
+
+    <div class="result-block color2"onclick="showPopup('É o número de voltas que o carrossel irá fazer, pode ser definido no painel da máquina.')">
+        <p id="turnsResult">Número de Voltas Carrossel: </p>
+    </div>
+    
+    <div class="result-block color5"onclick="showPopup('É o número de vezes ao qual você irá retirar o tecido do carrossel e colocá-lô na mesa.')">
+        <p id="cyclesResult">Número de Carrossel: </p>
+    </div>
+
+        <div class="result-block color6"onclick="showPopup('É o número de voltas restantes para fechar a quantidade da OP, por exemplo: de o número de carrossel é 5,45 serão 5 carrosséis e mais 0,45 que convertento em voltas fecharão o total da OP.')">
+        <p id="remainingTurnsResult">Restante de Voltas para Fechar a OP: </p>
+    </div>
+
+    <div class="result-block color3"onclick="showPopup('É a quantidade cortada por um carrossel, quando termina o número de voltas de um ciclo completo do carrossel.')">
+        <p id="cutAmountResult">Quantidade Cortada por Carrossel: </p>
+    </div>
+
+    <div class="result-block color4"onclick="showPopup('É a quantidade total depois de terminar de rodar todos os carrosséis, este valor sempre deve ser o mais próximo possível da quantidade solicitada na OP.')">
+        <p id="totalCutAmountResult">Quantidade Total Cortada: </p>
+    </div>
+
+</div>
+
+  <button onclick="downloadCSV()">Download CSV</button>
+<!-- TABELA -->
+    <table id="recordsTable">
+        <thead>
+<!-- CABEÇALHO DA TABELA -->
+            <tr>
+                <th>Data e Hora</th>
+                <th>Máquinas Ativas</th>
+                <th>Número da OP</th>
+                <th>Código do Componente</th>
+                <th>Quantidade da OP</th>
+                <th>Comprimento da OP</th>
+                <th>Tipo de Tecido</th>
+                <th>Gramatura da OP</th>
+            <th>Número de Cortes</th> <!-- Título novo -->
+            <th>Número de Voltas</th> <!-- Título novo -->
+            <th>Quantidade Cortada</th> <!-- Título novo -->
+            <th>Número de Carrosséis</th> <!-- Título novo -->
+            <th>Restante de Voltas</th> <!-- Título novo -->
+            <th>Quantidade Total Cortada</th> <!-- Título novo -->
+            <th>Tamanho do Carrossel</th> <!-- Título novo -->
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+  
+<!-- INICIO DO SCRIPT -->
+    
+<script>
+let records = [];
+
+// Carrega a tabela do localStorage ao carregar a página
+document.addEventListener('DOMContentLoaded', (event) => {
+    loadTableFromLocalStorage();
+    
+    // Adiciona os eventos de verificação de OP e Código de Componente repetidos
+    document.getElementById('opNumber').addEventListener('input', checkRepeated);
+    document.getElementById('componentCode').addEventListener('input', checkRepeated);
+
+
+    // Desabilita o formulário inicialmente
+    toggleForm(false);
+});
+
+// Função para mostrar popup
+function showPopup(message) {
+    alert(message); // Mostra o pop-up com a informação
+}
+
+// Função para ativar ou desativar uma máquina
+function toggleMachine(machineNumber) {
+    const button = document.getElementById(`machine${machineNumber}`);
+    if (button.classList.contains('inactive')) {
+        button.classList.remove('inactive');
+        button.classList.add('active');
+    } else {
+        button.classList.remove('active');
+        button.classList.add('inactive');
+    }
+
+    // Verifica se há pelo menos uma máquina ativa para habilitar o formulário
+    checkMachinesAndToggleForm();
+}
+
+// Conta as máquinas ativas
+function getActiveMachinesCount() {
+    let count = 0;
+    const machineButtons = document.getElementsByClassName('machine-btn');
+    for (let button of machineButtons) {
+        if (button.classList.contains('active')) {
+            count++;
+        }
+    }
+    return count;
+}
+
+// Habilita ou desabilita o formulário com base na quantidade de máquinas ativas
+function checkMachinesAndToggleForm() {
+    const activeMachinesCount = getActiveMachinesCount();
+    toggleForm(activeMachinesCount > 0); // Habilita o formulário se houver ao menos uma máquina ativa
+}
+
+// Habilita ou desabilita todos os elementos do formulário
+function toggleForm(enable) {
+    const formElements = document.querySelectorAll('input, select, button');
+    formElements.forEach(element => {
+        if (element.id !== 'machine1' && element.id !== 'machine2' && element.id !== 'machine3' && element.id !== 'machine4') {
+            element.disabled = !enable; // Habilita ou desabilita o formulário
+        }
+    });
+}
+
+// Formata o número da OP (Operação)
+function formatOPNumber(input) {
+    let value = input.value.replace(/\D/g, '');
+    if (value.length > 3) value = value.substring(0, 3) + '.' + value.substring(3);
+    if (value.length > 7) value = value.substring(0, 7) + '/' + value.substring(7);
+    if (value.length > 10) value = value.substring(0, 10) + '.' + value.substring(10);
+    input.value = value;
+}
+
+
+
+// Verifica se a combinação de OP e Código de Componente é repetida
+function checkRepeated() {
+    const opNumber = document.getElementById('opNumber').value;
+    const componentCode = document.getElementById('componentCode').value;
+
+    if (opNumber && componentCode && isCombinationRepeated(opNumber, componentCode)) {
+        showPopup("A combinação de Número da OP e Código do Componente já existe. Os campos serão limpos.");
+        // Limpa os campos se a combinação já existir
+        document.getElementById('opNumber').value = ''; 
+        document.getElementById('componentCode').value = ''; 
+    }
+}
+
+// Verifica se a combinação de OP e Código de Componente já foi registrada
+function isCombinationRepeated(opNumber, componentCode) {
+    return records.some(record => record.opNumber === opNumber && record.componentCode === componentCode);
+}
+
+
+// Função para limpar os campos de entrada sem afetar os cálculos
+function resetInputFields() {
+    // Limpa os campos de entrada
+    document.getElementById('opNumber').value = '';
+    document.getElementById('componentCode').value = '';
+    document.getElementById('opQuantity').value = '';
+    document.getElementById('opLength').value = '';
+    document.getElementById('fabricType').value = '';
+    document.getElementById('opWeight').value = '';
+
+        // Desabilita os campos de entrada
+    document.getElementById('opNumber').disabled = true;
+    document.getElementById('componentCode').disabled = true;
+    document.getElementById('opQuantity').disabled = true;
+    document.getElementById('opLength').disabled = true;
+    document.getElementById('fabricType').disabled = true;
+    document.getElementById('opWeight').disabled = true;
+
+    // Resetar os botões das máquinas para o estado inicial (inativo)
+    const machineButtons = document.getElementsByClassName('machine-btn');
+    for (let button of machineButtons) {
+        button.classList.remove('active');
+        button.classList.add('inactive');
+    }
+
+}
+
+    
+// Calcula e salva os dados
+function calculateAndSave() {
+    const opNumber = document.getElementById('opNumber').value;
+    const componentCode = document.getElementById('componentCode').value;
+    const opQuantity = parseFloat(document.getElementById('opQuantity').value);
+    const opLength = parseFloat(document.getElementById('opLength').value);
+    const fabricType = document.getElementById('fabricType').value;
+    const opWeight = parseFloat(document.getElementById('opWeight').value);
+
+    if (!opNumber || !componentCode || isNaN(opQuantity) || isNaN(opLength) || !fabricType || isNaN(opWeight)) {
+        alert('Por favor, preencha todos os campos corretamente.');
+        return;
+    }
+
+    const maxCarouselLength = 540 / opLength;
+    const numCuts = Math.floor(maxCarouselLength);
+    const numCutsText = `Número de Cortes na mesa: ${numCuts}`;
+    document.getElementById('cutsResult').textContent = numCutsText;
+
+    let numTurns = 0;
+    if (fabricType === 'Plano') {
+        numTurns = Math.floor(((120 - opWeight) * 0.73) + 40);
+    } else if (fabricType === 'Tubular') {
+        numTurns = Math.floor(((82 - opWeight) * 0.3) + 40);
+    } else if (fabricType === 'PATCH') {
+        numTurns = 25;
+    } else if (fabricType === 'Saia') {
+        numTurns = Math.floor(((120 - opWeight) * 0.55) + 40);
+    } else if (fabricType === 'HB') {
+        numTurns = Math.floor(((82 - opWeight) * 0.42) + 40);
+    } else if (fabricType === 'Liner') {
+        numTurns = Math.floor(((210 - opWeight) * 0.2) + 18)
+    }
+
+    const totalCuts = numTurns * numCuts;
+    if (totalCuts > opQuantity) {
+        numTurns = Math.floor(opQuantity / numCuts);
+    }
+
+    const numTurnsText = `Número de Voltas Carrossel: ${numTurns}`;
+    document.getElementById('turnsResult').textContent = numTurnsText;
+
+    const cutAmount = Math.floor(numCuts * numTurns);
+    const cutAmountText = `Quantidade Cortada por Carrossel: ${cutAmount}`;
+    document.getElementById('cutAmountResult').textContent = cutAmountText;
+
+    const numCycles = cutAmount > 0 ? opQuantity / cutAmount : 0;
+    const numCyclesText = `Número de carrosséis: ${numCycles}`;
+    document.getElementById('cyclesResult').textContent = numCyclesText;
+
+    const fractionalPart = numCycles - Math.floor(numCycles);
+    const remainingTurns = Math.ceil(numTurns * fractionalPart);
+    const remainingTurnsText = `Mais um Carrossel com este número de voltas para Fechar a OP: ${remainingTurns}`;
+    document.getElementById('remainingTurnsResult').textContent = remainingTurnsText;
+
+    const totalCutAmount = Math.floor((numCuts * Math.floor(numCycles) * numTurns) + remainingTurns * numCuts);
+    const totalCutAmountText = `Quantidade Total Cortada: ${totalCutAmount}`;
+    document.getElementById('totalCutAmountResult').textContent = totalCutAmountText;
+
+    const carouselSize = Math.floor(540 / opLength) * opLength;
+    const carouselSizeText = `Tamanho do carrossel: ${carouselSize} cm`;
+    document.getElementById('carouselSizeResult').innerText = carouselSizeText;
+
+    const activeMachines = getActiveMachines();
+    const now = new Date().toLocaleString();
+    const record = {
+        date: now,
+        machines: activeMachines.join(', '),
+        opNumber,
+        componentCode,
+        opQuantity,
+        opLength,
+        fabricType,
+        opWeight,
+        numCuts,
+        numTurns,
+        cutAmount,
+        numCycles,
+        remainingTurns,
+        totalCutAmount,
+        carouselSize
+    };
+
+    records.push(record);
+    updateTable();
+    saveTableToLocalStorage();
+
+
+      // Limpa apenas os campos de entrada
+    resetInputFields();
+
+
+}
+
+// Obtém as máquinas ativas
+function getActiveMachines() {
+    const activeMachines = [];
+    const machineButtons = document.getElementsByClassName('machine-btn');
+    for (let button of machineButtons) {
+        if (button.classList.contains('active')) {
+            activeMachines.push(button.innerText);
+        }
+    }
+    return activeMachines;
+}
+
+// Atualiza a tabela com os dados
+function updateTable() {
+    const tableBody = document.querySelector('#recordsTable tbody');
+    tableBody.innerHTML = '';
+    records.slice().reverse().forEach((record) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${record.date}</td>
+            <td>${record.machines}</td>
+            <td>${record.opNumber}</td>
+            <td>${record.componentCode}</td>
+            <td>${record.opQuantity}</td>
+            <td>${record.opLength}</td>
+            <td>${record.fabricType}</td>
+            <td>${record.opWeight}</td>
+            <td>${record.numCuts}</td>
+            <td>${record.numTurns}</td>
+            <td>${record.cutAmount}</td>
+            <td>${record.numCycles}</td>
+            <td>${record.remainingTurns}</td>
+            <td>${record.totalCutAmount}</td>
+            <td>${record.carouselSize}</td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
+// Salva a tabela no localStorage
+function saveTableToLocalStorage() {
+    localStorage.setItem('productionRecords', JSON.stringify(records));
+}
+
+// Carrega a tabela do localStorage
+function loadTableFromLocalStorage() {
+    const storedRecords = localStorage.getItem('productionRecords');
+    if (storedRecords) {
+        records = JSON.parse(storedRecords);
+        updateTable();
+    }
+}
+
+// Faz o download dos registros em CSV
+function downloadCSV() {
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += "Data,Máquinas Ativas,OP Número,Código do Componente,Quantidade OP,Comprimento OP,Tipo de Tecido,Peso OP,Número de Cortes,Número de Voltas,Quantidade Cortada,Número de Carrosséis,Restante de Voltas,Quantidade Total Cortada,Tamanho do Carrossel\n";
+    
+    records.forEach((record) => {
+        const row = `"${record.date}","${record.machines}","${record.opNumber}","${record.componentCode}","${record.opQuantity}","${record.opLength}","${record.fabricType}","${record.opWeight}","${record.numCuts}","${record.numTurns}","${record.cutAmount}","${record.numCycles}","${record.remainingTurns}","${record.totalCutAmount}","${record.carouselSize}"`;
+        csvContent += row + "\n";
+    });
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', 'production_records.csv');
+    document.body.appendChild(link);
+    link.click();
+}
+
+
+
+</script>
+
+</body>
+</html>
