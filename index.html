@@ -278,6 +278,7 @@ h2 {
                 <option value="Saia">Saia</option>
                 <option value="HB">HB</option>
                 <option value="Liner">Liner</option>
+                <option value="104_Valvula_Funilada">104_Valvula_Funilada</option>
             </select>
         </div>
         <div class="input-group">
@@ -523,6 +524,8 @@ function calculateAndSave() {
         numTurns = Math.floor(((82 - opWeight) * 0.42) + 40);
     } else if (fabricType === 'Liner') {
         numTurns = Math.floor(((210 - opWeight) * 0.2) + 13)
+    } else if (fabricType === '104_Valvula_Funilada') {
+        numTurns = 25;
     }
 
     const totalCuts = numTurns * numCuts;
